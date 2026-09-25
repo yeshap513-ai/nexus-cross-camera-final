@@ -1,11 +1,78 @@
-import sys
-from pathlib import Path
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-# Add the backend directory to Python's import path
-BACKEND_DIR = Path(__file__).resolve().parent.parent / "backend"
+app = FastAPI(
+    title="NEXUS Cross-Camera Intelligence API"
+)
 
-if str(BACKEND_DIR) not in sys.path:
-    sys.path.insert(0, str(BACKEND_DIR))
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-# Import the FastAPI application
-from server import app
+
+@app.get("/api/status")
+def status():
+    return {
+        "status": "online",
+        "message": "NEXUS API is running on Vercel",
+        "processing": False
+    }
+
+
+@app.get("/api/detections")
+def detections():
+    return []
+
+
+@app.get("/api/alerts")
+def alerts():
+    return []
+
+
+@app.get("/api/watchlist")
+def watchlist():
+    return []
+
+
+@app.get("/api/ingest")
+def ingest():
+    return {
+        "status": "online",
+        "message": "Camera ingestion API is available"
+    }
+
+
+@app.get("/api/correlate")
+def correlate():
+    return {
+        "matches": [],
+        "count": 0
+    }
+
+
+@app.get("/api/correlate/visual")
+def visual_correlation():
+    return {
+        "matches": [],
+        "count": 0
+    }
+
+
+@app.post("/api/export")
+def export_data():
+    return {
+        "status": "success",
+        "message": "Export endpoint is available"
+    }
+
+
+@app.post("/api/process/run")
+def process():
+    return {
+        "status": "unavailable",
+        "message": "AI video processing is not available inside the Vercel serverless function."
+    }
