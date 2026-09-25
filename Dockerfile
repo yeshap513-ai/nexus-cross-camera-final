@@ -14,7 +14,7 @@ COPY frontend/ ./
 RUN npm run build
 
 # Stage 2: Python AI Engine & Server Runtime
-FROM python:3.10-slim AS runner
+FROM python:3.11-slim AS runner
 
 # Install system dependencies for OpenCV, FFmpeg, and PyTorch
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -27,7 +27,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Install Python dependencies
+# Pre-install CPU-optimized PyTorch and TorchVision (fast, lightweight, avoids CUDA bloat)
+RUN pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu
+
+# Install remaining Python AI and web dependencies
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 

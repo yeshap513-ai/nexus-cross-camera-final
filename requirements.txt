@@ -1,18 +1,13 @@
 # NEXUS: Cross-Camera Intelligence System
-# Unified Python Core & AI Requirements (Determined from active environment)
+# Unified Python Core & AI Dependencies
 
-fastapi>=0.141.1
-uvicorn>=0.53.0
-torch>=2.14.0
-torchvision>=0.29.0
-ultralytics>=8.4.161
-easyocr>=1.7.2
-opencv-python-headless>=5.0.0.93
-numpy>=2.5.3
-pandas>=3.0.6
-streamlit>=1.64.0
-folium>=0.20.0
-streamlit-folium>=0.27.4
-requests>=2.34.2
-pydantic>=2.13.5
-python-multipart>=0.0.32
+fastapi>=0.110.0
+uvicorn>=0.28.0
+ultralytics>=8.1.0
+easyocr>=1.7.0
+opencv-python-headless>=4.8.0
+numpy
+pandas
+requests
+pydantic>=2.0.0
+python-multipart>=0.0.9
