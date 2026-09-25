@@ -3,6 +3,7 @@ import threading
 from typing import Optional, List, Dict, Any
 from pathlib import Path
 from fastapi import FastAPI, Query, BackgroundTasks, HTTPException
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
@@ -199,6 +200,30 @@ def trigger_processing(background_tasks: BackgroundTasks, max_frames: int = Quer
     background_tasks.add_task(run_all_local_cameras_worker, max_frames)
     return {"status": "started", "message": f"Processing queued for {len(LOCAL_CAMERAS)} cameras."}
 
+# Serve compiled React frontend in single-container deployment (e.g. Railway / Production)
+FRONTEND_DIST = BASE_DIR / "static_frontend"
+if not FRONTEND_DIST.exists():
+    FRONTEND_DIST = BASE_DIR.parent / "frontend" / "dist"
+
+if FRONTEND_DIST.exists():
+    assets_dir = FRONTEND_DIST / "assets"
+    if assets_dir.exists():
+        app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="assets")
+
+    @app.get("/{full_path:path}")
+    async def serve_spa(full_path: str):
+        # Don't intercept API, snapshots, or videos
+        if full_path.startswith(("api", "snapshots", "videos", "output_videos", "docs", "openapi.json")):
+            raise HTTPException(status_code=404, detail="Not found")
+        file_path = FRONTEND_DIST / full_path
+        if file_path.is_file():
+            return FileResponse(file_path)
+        index_file = FRONTEND_DIST / "index.html"
+        if index_file.exists():
+            return FileResponse(index_file)
+        raise HTTPException(status_code=404, detail="Frontend index.html not found")
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("server:app", host="127.0.0.1", port=8000, reload=False)
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run("server:app", host="0.0.0.0", port=port, reload=False)
