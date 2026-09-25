@@ -1,0 +1,15 @@
+opencv-python-headless
+numpy
+streamlit
+pandas
+folium
+streamlit-folium
+ultralytics
+fastapi
+uvicorn
+requests
+pydantic
+python-multipart
+easyocr
+torch
+torchvision
